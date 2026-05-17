@@ -9,6 +9,53 @@
 
 ---
 
+## Beyond one-liners: goals and briefs
+
+`autonomous_edit` accepts anything from a five-word command to a five-hundred-word creative brief. Three flavors:
+
+### 1. Direct commands
+
+Single edit, single result:
+
+```text
+"Generate captions and remove silences"
+"Reframe to 9:16 for TikTok"
+"Color grade like a Netflix doc"
+```
+
+### 2. Open-ended goals (watch and propose)
+
+Hand the agent a *goal* instead of a command and it inspects the asset, then proposes a plan:
+
+```text
+"Watch this and tell me how to make it more engaging for TikTok"
+"Look at the first 30 seconds and suggest 3 ways to hook the viewer"
+"Review this footage and propose edits to tighten the pacing"
+```
+
+Pair these with `requirePlanApproval: true` to keep the agent in propose-only mode — it stops after planning, returns the full plan, and waits for your approval before executing anything.
+
+### 3. Full creative briefs
+
+Multi-step orchestrations executed end-to-end. The agent decomposes the brief into a DAG of canonical actions, plans the order, executes through safety gates, verifies each step, and exports every requested format. Use SSE to watch each step land in real time.
+
+```bash
+curl -sS -X POST "$ADSCENE_API_URL/api/v1/misc/openclaw/v1/execute" \
+  -H "Authorization: Bearer $ADSCENE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tool": "autonomous_edit",
+    "params": {
+      "prompt": "Transform this video into a viral social media documentary. Start by trimming the first 3 seconds and last 5 seconds to remove dead air. Apply a cinematic color grade with warm tones and high contrast. Generate auto-captions with bold yellow text and black outline, positioned at the bottom center. Add a dynamic zoom-in effect on the main subject during the first 10 seconds. Insert 3 contextual b-roll clips at moments where the speaker mentions visual concepts. Apply face tracking to keep the subject centered when converting to vertical 9:16 format for TikTok and Instagram Reels. Add an upbeat background music track that matches the energy, with auto-ducking when the speaker talks. Remove all silence gaps longer than 0.5 seconds to tighten pacing. Apply a subtle vignette effect around the edges. Add my logo watermark in the top right corner with 80% opacity. Generate a custom thumbnail with the most expressive frame and bold text overlay saying MUST WATCH. Create an animated subscribe button that appears at 5 seconds and pulses. Add sound effects for emphasis at key moments - use whoosh sounds for transitions. Apply noise reduction to clean up the audio. Split the video at 30 seconds to insert a 2-second transition effect. Add text overlays for key statistics mentioned in the video with animated counter effects. Apply motion tracking to blur any faces in the background for privacy. Export the final video in 1080p for YouTube and also create optimized versions for TikTok, Instagram Reels, and YouTube Shorts with platform-specific aspect ratios and durations."
+    },
+    "project_id": "my-project"
+  }'
+```
+
+That single call composes ~20 canonical actions in one planned run. No timeline UI, no per-step API calls, no glue code on your side.
+
+---
+
 ## What you can do with it
 
 | You ask | It does |
@@ -155,53 +202,6 @@ curl -sS -X POST "$ADSCENE_API_URL/api/v1/misc/openclaw/v1/execute" \
 ```
 
 Anything in the [capability surface](#capability-surface) above is reachable from a prompt. Mix and match: chroma key + background replace + caption + emphasis in a single sentence works.
-
----
-
-## Beyond one-liners: goals and briefs
-
-`autonomous_edit` accepts anything from a five-word command to a five-hundred-word creative brief. Three flavors:
-
-### 1. Direct commands
-
-Single edit, single result:
-
-```text
-"Generate captions and remove silences"
-"Reframe to 9:16 for TikTok"
-"Color grade like a Netflix doc"
-```
-
-### 2. Open-ended goals (watch and propose)
-
-Hand the agent a *goal* instead of a command and it inspects the asset, then proposes a plan:
-
-```text
-"Watch this and tell me how to make it more engaging for TikTok"
-"Look at the first 30 seconds and suggest 3 ways to hook the viewer"
-"Review this footage and propose edits to tighten the pacing"
-```
-
-Pair these with `requirePlanApproval: true` to keep the agent in propose-only mode — it stops after planning, returns the full plan, and waits for your approval before executing anything.
-
-### 3. Full creative briefs
-
-Multi-step orchestrations executed end-to-end. The agent decomposes the brief into a DAG of canonical actions, plans the order, executes through safety gates, verifies each step, and exports every requested format. Use SSE to watch each step land in real time.
-
-```bash
-curl -sS -X POST "$ADSCENE_API_URL/api/v1/misc/openclaw/v1/execute" \
-  -H "Authorization: Bearer $ADSCENE_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "tool": "autonomous_edit",
-    "params": {
-      "prompt": "Transform this video into a viral social media documentary. Start by trimming the first 3 seconds and last 5 seconds to remove dead air. Apply a cinematic color grade with warm tones and high contrast. Generate auto-captions with bold yellow text and black outline, positioned at the bottom center. Add a dynamic zoom-in effect on the main subject during the first 10 seconds. Insert 3 contextual b-roll clips at moments where the speaker mentions visual concepts. Apply face tracking to keep the subject centered when converting to vertical 9:16 format for TikTok and Instagram Reels. Add an upbeat background music track that matches the energy, with auto-ducking when the speaker talks. Remove all silence gaps longer than 0.5 seconds to tighten pacing. Apply a subtle vignette effect around the edges. Add my logo watermark in the top right corner with 80% opacity. Generate a custom thumbnail with the most expressive frame and bold text overlay saying MUST WATCH. Create an animated subscribe button that appears at 5 seconds and pulses. Add sound effects for emphasis at key moments - use whoosh sounds for transitions. Apply noise reduction to clean up the audio. Split the video at 30 seconds to insert a 2-second transition effect. Add text overlays for key statistics mentioned in the video with animated counter effects. Apply motion tracking to blur any faces in the background for privacy. Export the final video in 1080p for YouTube and also create optimized versions for TikTok, Instagram Reels, and YouTube Shorts with platform-specific aspect ratios and durations."
-    },
-    "project_id": "my-project"
-  }'
-```
-
-That single call composes ~20 canonical actions in one planned run. No timeline UI, no per-step API calls, no glue code on your side.
 
 ---
 
