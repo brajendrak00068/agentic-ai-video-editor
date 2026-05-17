@@ -18,6 +18,9 @@
 | "Make this TikTok-ready" | Vertical 9:16 reframe + captions + silence removal + emphasis kit |
 | "Export for TikTok, Reels, Shorts, YouTube, and Instagram" | One pass, all aspect ratios in one bundle |
 | "Replace the green screen with a beach, keep the speaker centered" | Chroma key + background composite + motion tracking in one call |
+| "Remove the background from this video — no green screen" | AI background removal via alpha matte (works on any footage) |
+| "Blur the background, keep me in focus" | AI background blur (subject-aware) |
+| "Remove the logo from this frame" | Object removal *(roadmap — mask + inpaint)* |
 | "Remove all silences and filler words, add background music" | Cleans the audio track, adds ducked music under speech |
 | "Auto-zoom on whoever's talking" | Active-speaker detection + dynamic zoom-follow framing |
 | "Generate captions and highlight every time they say 'launch'" | Auto-captions + keyword emphasis with scaling / glow / pulse |
@@ -31,6 +34,8 @@
 | "Color grade this like a Netflix doc" | Color grading with cinematic preset |
 | "Slow-mo the climax, freeze on the reveal" | Retime with ramp curves + freeze-frame |
 | "Generate chapter titles from the on-screen text" | OCR-driven chapter generation |
+| "Reframe to vertical but don't crop off the lower-third captions" | Caption-safe 9:16 reframe (preserves on-screen text) |
+| "What text is on screen at 0:42?" | On-screen text extraction (OCR) |
 | "Sync my voiceover to the video and duck the music" | Audio sync + auto-ducking |
 
 That's the headline. Below is the full surface.
@@ -58,6 +63,7 @@ That's the headline. Below is the full surface.
 - Inspect the timeline structure, layer properties, and scene state
 - Search the asset gallery by type, duration, name
 - Run computer-vision analysis on frames (object, face, scene)
+- **Extract on-screen text** — OCR of chyrons, lower-thirds, slide titles, captions burned into source
 - Search the transcript by keyword, semantic meaning, or timestamp window
 - Pull video intelligence — narrative peaks, speaker diarization, sentiment, pacing
 - Poll async job status, introspect tool / schema metadata
@@ -73,11 +79,14 @@ That's the headline. Below is the full surface.
 - **Color grading** — brightness, contrast, saturation, hue, lift / gamma / gain, RGB curves
 - **Procedural VFX shaders** — smoke, dust, fire, explosion, lightning, snow, glitch, scanlines, grain, glassmorphism, bokeh, lava, telomere / corrosion, portal
 - **Chroma key** — green / blue screen with similarity, smoothness, spill suppression
+- **AI background removal** — alpha matte (works on any video, no green screen required)
+- **AI background blur** — subject-aware depth blur
+- **Object removal** — *(roadmap)* AI mask + inpaint
 - **Masking** — luma, alpha, depth masks
 - **Geometric clip shapes** — circle, dome, star, hexagon, polygon
 - **Crop** — absolute or edge-based; **3D rotation + perspective**
 - **Glow, shadow, inner shadow, gradient fills, text gradients**
-- **Vertical reframe** (9:16) and vertical-reframe montage
+- **Vertical reframe** (9:16) and vertical-reframe montage — **caption-safe** (avoids cropping through on-screen text and chyrons)
 - **Split screen** — top/bottom, left/right, picture-in-picture, grid
 - **Branding overlays** — logo / watermark from gallery or AI-generated
 - **Motion / face tracking** with dynamic zoom-follow framing
