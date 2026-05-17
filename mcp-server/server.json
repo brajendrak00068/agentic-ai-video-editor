@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.json",
+  "name": "io.github.brajendrak00068/levea-mcp-server",
+  "description": "Levea autonomous AI video editor — natural-language video editing (viral clips, captions, vertical reframe, chroma key, audio cleanup, motion tracking, B-roll, voiceover, music, MP4 export) over MCP.",
+  "status": "active",
+  "version": "0.2.0",
+  "repository": {
+    "url": "https://github.com/brajendrak00068/openclaw-ai-video-editor",
+    "source": "github",
+    "subfolder": "mcp-server"
+  },
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "levea-mcp-server",
+      "version": "0.2.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "ADSCENE_API_URL",
+          "description": "Levea API base URL, e.g. https://api.livecore.ai",
+          "isRequired": true,
+          "isSecret": false
+        },
+        {
+          "name": "ADSCENE_API_KEY",
+          "description": "Levea API key. Generate one at https://studio.livecor.ai/",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

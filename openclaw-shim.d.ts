@@ -1,8 +1,10 @@
-// Local type shim for `openclaw/plugin-sdk` so this plugin can be type-checked
-// without installing the 1GB+ openclaw runtime package as a devDependency.
-// At runtime the host process provides the real implementation.
+// Local type shim for `openclaw/plugin-sdk/core` so this plugin can be
+// type-checked without installing the 1GB+ openclaw runtime package as a
+// devDependency. At runtime the host process provides the real implementation.
+// OpenClaw 2026.5.x moved `definePluginEntry` off the bare `openclaw/plugin-sdk`
+// root onto focused subpaths; `core` re-exports it.
 
-declare module 'openclaw/plugin-sdk' {
+declare module 'openclaw/plugin-sdk/core' {
   export interface AgentToolResult {
     content: Array<{ type: 'text'; text: string } | { type: 'image'; data: string; mimeType?: string }>;
     details: unknown;

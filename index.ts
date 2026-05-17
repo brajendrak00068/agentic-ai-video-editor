@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { definePluginEntry } from 'openclaw/plugin-sdk';
+import { definePluginEntry } from 'openclaw/plugin-sdk/core';
 
 /**
  * Levea Agentic Video Editor Handler

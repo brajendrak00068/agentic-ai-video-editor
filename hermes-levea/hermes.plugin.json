@@ -1,0 +1,19 @@
+{
+  "name": "levea-ai-video-editor",
+  "displayName": "Levea AI Video Editor",
+  "version": "0.1.0",
+  "description": "Autonomous AI video editing for Hermes — viral clips, captions, vertical reframe, chroma key, audio cleanup, motion tracking, B-roll, voiceover, music, MP4 export. Backed by the levea-mcp-server.",
+  "type": "mcp",
+  "mcp": {
+    "transport": "stdio",
+    "command": "npx",
+    "args": ["-y", "levea-mcp-server"],
+    "env": {
+      "ADSCENE_API_URL": "https://api.livecore.ai",
+      "ADSCENE_API_KEY": "${ADSCENE_API_KEY}"
+    }
+  },
+  "requires": {
+    "env": ["ADSCENE_API_KEY"]
+  }
+}

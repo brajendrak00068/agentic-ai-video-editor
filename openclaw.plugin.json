@@ -2,7 +2,7 @@
   "id": "openclaw-ai-video-editor",
   "name": "OpenClaw AI Video Editor",
   "description": "Agentic AI video editor — natural-language video edits end-to-end via a single `autonomous_edit` tool. Viral clips, captions, vertical reframe, chroma key, AI background removal, audio cleanup, motion tracking, B-roll, voiceover, music, and MP4 / multi-platform export.",
-  "version": "1.0.17",
+  "version": "1.0.21",
   "enabledByDefault": true,
   "skills": [
     "./SKILL.md"

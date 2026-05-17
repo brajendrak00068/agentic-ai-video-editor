@@ -1,0 +1,63 @@
+{
+  "name": "levea-mcp-server",
+  "version": "0.2.0",
+  "description": "MCP server for the Levea autonomous AI video editor — natural-language video editing (viral clips, captions, vertical reframe, chroma key, audio cleanup, motion tracking, B-roll, voiceover, music, MP4 export) for Claude Desktop, Claude Code, Cursor, Cline, OpenClaw, and Hermes.",
+  "mcpName": "io.github.brajendrak00068/levea-mcp-server",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "levea-mcp-server": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "src",
+    "server.json",
+    "README.md",
+    "SKILL.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "mcp-server",
+    "levea",
+    "video-editing",
+    "ai-video-editor",
+    "autonomous-video-editing",
+    "viral-clips",
+    "captions",
+    "claude",
+    "claude-desktop",
+    "claude-code",
+    "cursor",
+    "openclaw",
+    "hermes"
+  ],
+  "license": "MIT",
+  "author": "brajendrak00068",
+  "homepage": "https://github.com/brajendrak00068/openclaw-ai-video-editor/tree/main/mcp-server",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brajendrak00068/openclaw-ai-video-editor.git",
+    "directory": "mcp-server"
+  },
+  "bugs": {
+    "url": "https://github.com/brajendrak00068/openclaw-ai-video-editor/issues"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

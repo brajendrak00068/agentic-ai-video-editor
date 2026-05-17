@@ -9,6 +9,24 @@
 
 ---
 
+## Works in every AI client (MCP-first)
+
+The portable interface is the **[`levea-mcp-server`](./mcp-server/)** MCP
+server. One server, every MCP client — Claude Desktop, Claude Code, Cursor,
+Cline, OpenClaw, Hermes — with one tool surface backed by one backend
+contract, so nothing drifts per platform.
+
+| Client | How |
+|---|---|
+| Claude Desktop / Code / Cursor / Cline | Add `levea-mcp-server` to `mcpServers` — see [mcp-server/README](./mcp-server/README.md) |
+| OpenClaw | This ClawHub plugin (chat-native) **or** register the MCP server: `openclaw mcp add levea --command "npx -y levea-mcp-server" …` |
+| Hermes | Thin wrapper in [`hermes-levea/`](./hermes-levea/) |
+
+The OpenClaw plugin below remains for chat-native UX and ClawHub
+discoverability; it and every other client call the same backend.
+
+---
+
 ## Beyond one-liners: goals and briefs
 
 `autonomous_edit` accepts anything from a five-word command to a five-hundred-word creative brief. Three flavors:
