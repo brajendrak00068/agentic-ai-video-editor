@@ -5,6 +5,8 @@
 [![ClawHub](https://img.shields.io/badge/ClawHub-plugin-blue)](https://clawhub.ai/plugins/openclaw-ai-video-editor)
 [![npm](https://img.shields.io/npm/v/openclaw-ai-video-editor)](https://www.npmjs.com/package/openclaw-ai-video-editor)
 
+> **Beta.** The agent can make mistakes. Preview every output before publishing or sharing. For high-stakes or irreversible edits, pass `requirePlanApproval: true` so the agent stops after planning and waits for your approval before anything runs.
+
 ---
 
 ## What you can do with it
@@ -32,6 +34,8 @@
 | "Sync my voiceover to the video and duck the music" | Audio sync + auto-ducking |
 
 That's the headline. Below is the full surface.
+
+> **Beta caveat**: outputs sometimes need a second pass. Preview before publishing; for anything you can't undo, approve the plan first using the [plan approval flow](#plan-approval-flow).
 
 ---
 
@@ -124,11 +128,9 @@ Each preset bundles many underlying edits into a single call:
 
 ---
 
-## Two modes
+## How you use it
 
-### 1. `autonomous_edit` — natural language (primary)
-
-Pass a free-form description in `params.prompt`. The agent plans and executes the edit.
+Every edit goes through one tool: **`autonomous_edit`**. Pass a natural-language description of what you want and the agent plans, executes, verifies, and exports — no tool list to memorize, no structured params to learn.
 
 ```bash
 curl -sS -X POST "$ADSCENE_API_URL/api/v1/misc/openclaw/v1/execute" \
@@ -143,44 +145,7 @@ curl -sS -X POST "$ADSCENE_API_URL/api/v1/misc/openclaw/v1/execute" \
   }'
 ```
 
-### 2. Deterministic tools — structured params, no planning
-
-When you already know the action and have structured params:
-
-| Tool | Use when |
-|---|---|
-| `read_scene` | Inspect the current timeline |
-| `read_media` | List gallery assets |
-| `read_visual` | Run CV analysis on frames |
-| `query_transcript` | Search transcript by text or timestamp |
-| `scene_update` | Mutate a known layer's properties |
-| `scene_insert` | Add a video / audio / text / image / shape layer |
-| `scene_timing` | Trim, retime, reposition a layer |
-| `scene_mask` | Chroma / luma / alpha / depth mask |
-| `chroma_key` | Green-screen / blue-screen keying convenience |
-| `split_screen` | Top-bottom, left-right, PIP, grid |
-| `caption_compose` | Generate captions from transcript |
-| `media_treat` | Apply color correction |
-| `scene_track` | Face / object tracking with zoom-follow |
-| `clean_audio` | Silence / breath / filler removal |
-| `audio_mix`, `audio_mixing` | Ducking, normalize, denoise, EQ |
-| `voiceover_add` | Generate voiceover (text + voice_id) |
-| `music_generate` | Generate background music |
-| `export_video` | Render to MP4 |
-
-Unknown tool names return `400 UNKNOWN_TOOL` with a hint pointing at `autonomous_edit`.
-
-Example — direct layer update:
-
-```bash
-curl -sS -X POST "$ADSCENE_API_URL/api/v1/misc/openclaw/v1/execute" \
-  -H "Authorization: Bearer $ADSCENE_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "tool": "scene_update",
-    "params": { "layer_id": "layer_123", "opacity": 0.5, "rotation": 15 }
-  }'
-```
+Anything in the [capability surface](#capability-surface) above is reachable from a prompt. Mix and match: chroma key + background replace + caption + emphasis in a single sentence works.
 
 ---
 
@@ -267,8 +232,8 @@ Do **not** set `ADSCENE_API_URL` to `https://studio.levea.ai` or the in-product 
 
 ```json
 {
-  "tool": "autonomous_edit" | "<deterministic-tool>",
-  "params": { },
+  "tool": "autonomous_edit",
+  "params": { "prompt": "<natural-language edit>" },
   "project_id": "optional",
   "scene": { }
 }
@@ -350,6 +315,7 @@ This isn't an editor with AI features bolted on. It's an autonomous agent that f
 
 ## Safety & limits
 
+- **Currently in beta** — outputs can be wrong. Preview every result before sharing or publishing. For irreversible workflows, pass `requirePlanApproval: true` to inspect and approve the plan before any edit runs.
 - API-key authentication on every request
 - Destructive actions (mass deletes, clears) require explicit confirmation params
 - Output is verified after execution; auto-repairs on failure

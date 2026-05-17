@@ -29,6 +29,8 @@ A full agentic video editing surface. Send a prompt, get a planned, verified, ex
 
 Use this skill when the user asks for OpenClaw video editing, AI video editing, natural-language video edits, viral clips, TikTok videos, Instagram Reels, YouTube Shorts, auto captions, subtitles, chroma key, green screen removal, background removal, B-roll, motion tracking, silence removal, audio cleanup, voiceover, music generation, vertical video, multi-platform export, or MP4 export.
 
+> **Beta**: This skill is in beta and outputs can be wrong. Before executing any mutating edit on user content (anything beyond `read_*` / `query_*`), describe the planned edit and request explicit confirmation from the user. For destructive or irreversible workflows, pass `requirePlanApproval: true` so the editor halts after planning and the user can approve before execution.
+
 ## Endpoint
 
 `POST {ADSCENE_API_URL}/api/v1/misc/openclaw/v1/execute`
@@ -51,11 +53,9 @@ Request body:
 }
 ```
 
-## Two Modes
+## How you use it
 
-### 1. `autonomous_edit` — free-form prompt (primary)
-
-Pass a natural-language description in `params.prompt`. The brain classifies the intent, decomposes into atomic steps, plans a DAG of canonical actions, executes through the safety gates, and verifies the result. Use this when the caller doesn't already know which low-level action(s) are needed.
+Every edit goes through one tool: **`autonomous_edit`**. Pass a natural-language description in `params.prompt`. The agent classifies the intent, decomposes into atomic steps, plans, executes through safety gates, and verifies the result. There are no other tools the caller needs to learn.
 
 ```bash
 curl -sS -X POST "$ADSCENE_API_URL/api/v1/misc/openclaw/v1/execute" \
@@ -135,54 +135,15 @@ Behind a single `autonomous_edit` call the agent can compose any of:
 - `GENERATE_VIRAL_CLIPS` — auto-segment short-form clips packaged as ZIP
 - `GENERATE_MULTI_PLATFORM` — TikTok + Reels + Shorts + YouTube + Instagram aspect ratios in one pass
 
-### 2. Deterministic tool allowlist — structured params, no planning
-
-When the caller already knows the action and has structured params, use one of these tool names. The request is dispatched directly to the canonical action (skips intent decomposition / planning entirely):
-
-| Tool | Canonical action | Use when |
-|---|---|---|
-| `read_scene` | `READ_SCENE` | Inspect the current timeline |
-| `read_media` | `QUERY_ASSETS` | List gallery assets |
-| `read_visual` | `READ_VISUAL` | Run CV analysis on frames |
-| `query_transcript` | `QUERY_TRANSCRIPT` | Search transcript by text or timestamp |
-| `scene_update` | `UPDATE_LAYER` | Mutate a known layer's properties |
-| `scene_insert` | `CREATE_LAYER` | Add a video / audio / text / image / shape layer |
-| `scene_timing` | `SCENE_TIMING` | Trim, retime, reposition a layer |
-| `scene_mask` | `APPLY_MASK` | Apply a chroma / luma / alpha / depth mask |
-| `chroma_key` | `APPLY_MASK` | Convenience for green-screen / blue-screen keying |
-| `split_screen` | `SPLIT_SCREEN` | Grid layout: top-bottom, left-right, PIP |
-| `caption_compose` | `GENERATE_CAPTIONS` | Generate captions from transcript |
-| `media_treat` | `COLOR_GRADE` | Apply color correction |
-| `scene_track` | `TRACK_MOTION` | Face / object tracking with zoom-follow |
-| `clean_audio` | `CLEAN_AUDIO` | Silence / breath / filler removal |
-| `audio_mix`, `audio_mixing` | `AUDIO_MIXING` | Ducking, normalize, denoise, EQ |
-| `voiceover_add` | `GENERATE_VOICEOVER` | Generate voiceover (text + voice_id) |
-| `music_generate` | `GENERATE_MUSIC` | Generate background music |
-| `export_video` | `EXPORT_VIDEO` | Render to MP4 |
-
-Any unknown tool name returns `400 UNKNOWN_TOOL` with a hint pointing at `autonomous_edit`.
-
-Example — direct layer update, no planning round-trip:
-
-```bash
-curl -sS -X POST "$ADSCENE_API_URL/api/v1/misc/openclaw/v1/execute" \
-  -H "Authorization: Bearer $ADSCENE_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "tool": "scene_update",
-    "params": { "layer_id": "layer_123", "opacity": 0.5, "rotation": 15 }
-  }'
-```
-
 ## Auto-export follow-up
 
-After any **mutating** tool call (i.e., not `read_*`/`query_*` and not `export_video` itself), if the scene was actually changed and the agent did not already queue an `EXPORT_VIDEO`, the route fires one automatically as a second run. The final response carries `videoUrl` (when ready) or `jobId` (for polling). Read-only and conversational `autonomous_edit` calls do NOT trigger auto-export.
+After any **mutating** `autonomous_edit` call, if the scene was actually changed and the agent did not already queue an export, the route fires one automatically as a second run. The final response carries `videoUrl` (when ready) or `jobId` (for polling). Read-only and conversational `autonomous_edit` calls do NOT trigger auto-export.
 
 ## Optional input parameters (parity with the in-product editor)
 
 Pass any of these inside `params` (or at the top level of the body) to drive advanced features:
 
-- `prompt` — required for `autonomous_edit`; ignored for deterministic tools (structured params win)
+- `prompt` — required on every call (the natural-language edit description)
 - `workingMemory` — durable working-memory snapshot. Re-send to resume after `awaiting_approval`
 - `requirePlanApproval` — `true` makes the agent stop after planning and emit `awaiting_approval`; resume with the same workingMemory + an approval prompt (`"yes"`, `"approve"`, `"do it"`, …)
 - `attachedImages` — array of base64 screenshots / reference images
