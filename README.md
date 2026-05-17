@@ -12,14 +12,39 @@
 | You ask | It does |
 |---|---|
 | "Turn this into 5 viral clips with captions and vertical reframe" | Picks the best moments, cuts, captions, reframes, and exports |
-| "Replace the green screen with a beach, keep the speaker centered" | Chroma key + background composite + motion tracking, in one call |
+| "Cut a 60-second highlight from this 2-hour podcast" | Identifies narrative peaks, trims, packages with captions |
+| "Make this TikTok-ready" | Vertical 9:16 reframe + captions + silence removal + emphasis kit |
+| "Export for TikTok, Reels, Shorts, YouTube, and Instagram" | One pass, all aspect ratios in one bundle |
+| "Replace the green screen with a beach, keep the speaker centered" | Chroma key + background composite + motion tracking in one call |
 | "Remove all silences and filler words, add background music" | Cleans the audio track, adds ducked music under speech |
-| "Make this TikTok-ready" | Vertical reframe + captions + silence removal + emphasis kit |
+| "Auto-zoom on whoever's talking" | Active-speaker detection + dynamic zoom-follow framing |
+| "Generate captions and highlight every time they say 'launch'" | Auto-captions + keyword emphasis with scaling / glow / pulse |
 | "Find every clip where Alex appears" | Cross-asset face identity search |
-| "Cut to the beat" | Provide BPM or beat times — cuts align automatically |
-| "Export for TikTok, Reels, Shorts, YouTube, and Instagram" | One pass, all aspect ratios |
+| "Generate a thumbnail for this video" | AI thumbnail extraction at the best frame |
+| "Add narration in a cloned voice over the intro" | Voice cloning + TTS overlay + auto-ducking |
+| "Cut to the beat of this track" | Provide BPM or beat times — cuts align automatically |
+| "Generate B-roll over the product mention" | AI B-roll generation + placement at the right timestamp |
+| "Blur all faces except the speaker" | Face detection + selective blur |
+| "Add my logo as a watermark in the corner" | Branding overlay from gallery or AI-generated |
+| "Color grade this like a Netflix doc" | Color grading with cinematic preset |
+| "Slow-mo the climax, freeze on the reveal" | Retime with ramp curves + freeze-frame |
+| "Generate chapter titles from the on-screen text" | OCR-driven chapter generation |
+| "Sync my voiceover to the video and duck the music" | Audio sync + auto-ducking |
 
 That's the headline. Below is the full surface.
+
+---
+
+## Made for
+
+- **Creators & influencers** — turn long videos into TikToks, Reels, Shorts; auto-captions; viral-clip generation; AI thumbnails
+- **Podcasters** — video-podcast highlights, audiograms, multi-cam podcast editing, silence and filler-word removal
+- **Marketers & agencies** — ad creation at scale, social-first repurposing, brand-overlay automation, multi-platform exports
+- **Educators & course creators** — tutorial editing, auto-chapters, OCR'd slide titles, auto-captions, word-level emphasis
+- **YouTubers** — long-form → Shorts pipeline, thumbnail generation, intro / outro automation, chapter markers
+- **Sales & SaaS** — product demos, walkthrough highlights, voiceover narration with cloned voices
+- **Event teams** — webinar / conference highlights, multi-cam stitching, speaker spotlight reels
+- **Faith & community** — sermon clips for social, message highlights, multi-platform packaging
 
 ---
 
@@ -341,7 +366,7 @@ This isn't an editor with AI features bolted on. It's an autonomous agent that f
 | **Image in** | JPG, PNG, WebP |
 | **Audio in** | MP3, WAV, M4A, AAC (or extracted from video) |
 | **Output** | MP4 (export), ZIP (viral clips / multi-platform bundles) |
-| **Max video length** | Plan-dependent; soft limit ~30 min for synchronous edits, async generation handles longer |
+| **Max video length** | Up to **3 hours** per asset (plan-dependent). Synchronous edits and async generation both supported. |
 | **Recommended resolution** | 1080p or 4K; canvas is configurable per project |
 
 ---

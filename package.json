@@ -1,6 +1,6 @@
 {
   "name": "openclaw-ai-video-editor",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Agentic AI video editor — autonomous agent that plans and executes natural-language video edits end-to-end: viral clips, auto captions, vertical 9:16 reframe, chroma key, silence removal, motion tracking, B-roll, voiceover, music generation, and MP4 / multi-platform export through a single agentic tool.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
