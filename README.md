@@ -125,21 +125,75 @@ Say it in plain language; the agent plans and finishes the edit.
 
 ## Capability surface
 
-The full toolset behind the prompt. Every row is reachable from natural language — mix and match in a single sentence.
+The full toolset behind the prompt. Everything below is reachable from natural language — mix and match in a single sentence.
 
-| Area | Capabilities |
-|---|---|
-| **Read & inspect** | Timeline / layer / scene state · asset-gallery search (type, duration, name) · CV frame analysis (object, face, scene) · on-screen **text-region detection** (locates chyrons / lower-thirds / burned-in captions so reframing avoids covering them) · transcript search (keyword, semantic, timestamp) · video intelligence (narrative peaks, diarization, sentiment, pacing) · async job status + schema introspection |
-| **Structural editing** | Insert / update / replace / delete layers (**video, audio, text, image, shape, group, adjustment**) · trim, split, retime (slow-mo 0.5×, fast-forward 2×, freeze-frame, ramp curves) · reverse, stabilize · reposition, sequence, snap to transcript word boundaries · **multi-cam** sync + automatic angle switching · slideshow generation · chapter markers · SRT import · gap healing, audio normalize, duration reconcile (pre-export safety pass) · multi-step undo / redo |
-| **Visual editing** | Color grading (brightness, contrast, saturation, hue, lift/gamma/gain, RGB curves) · **procedural VFX shaders** (smoke, dust, fire, explosion, lightning, snow, glitch, scanlines, grain, glassmorphism, bokeh, lava, corrosion, portal) · chroma key · AI background removal (alpha matte) · AI background blur (subject-aware matte) · masking (luma, alpha, depth) · geometric clip shapes (circle, dome, star, hexagon, polygon) · crop + 3D rotation/perspective · glow, shadow, gradient fills · **caption-safe** vertical reframe (9:16) + montage · split screen (top/bottom, L/R, PiP, grid) · branding overlays · motion / face tracking with zoom-follow |
-| **Motion graphics & data viz** | ~30 production-grade animated graphics — **transcript-driven charts** (bar, line, pie), stat callouts, animated counters, lower-thirds, title / chapter cards, flowcharts, timelines, geo callouts, animated subscribe / CTA buttons |
-| **Captions & text** | Auto-generate from transcript · style with built-in templates **or** an AI director that picks/generates a template at runtime · curved text paths (circle, wave, custom SVG) · per-word animations (typewriter, slide, fade, scale, rotate, bounce, flip, swing, elastic, blur, glitch, wave — each with matching exit) · Lottie playback control |
-| **Audio** | Remove silences, breaths, filler words · word-level mute/cut · **auto-ducking** on speech (sidechain music vs voice) · mix / normalize / denoise / crossfade · EQ presets (bass-boost, vocal-clarity, warm, bright) · stem separation · sync external master audio · **beat-synced cuts** (`beat_times` or `bpm`) · SFX · music generation (mood/genre/BPM) · voiceover (TTS or cloned voice) · waveform visualizers (bars, wave, circular) |
-| **Privacy & cleanup** | Face blur (all faces or background-only) · privacy redaction (blur/cover regions) · profanity cleanup (mute / bleep) · safe-zone repair |
-| **Async generation** | AI video / B-roll (duration + aspect) · AI images (single or batch at timestamps) · AI music (prompt + duration + mood + genre + BPM) · AI voiceover (TTS or cloned voice library) · auto-thumbnail extraction · generative image edit |
-| **High-level presets** | **Viral** (vertical + captions + silence removal + tracking + word emphasis) · **Cinematic director** (dynamic zooms + cinematic grade + mood camera moves) · **Emphasis system** (keyword detection + coordinated scaling/glow/pulse) · **Pacing optimizer** (filler + silence + low-energy removal for retention) |
-| **Export** | Single MP4 (resolution / codec / quality tier) · viral-clip batch (auto-segmented short-form, packaged ZIP) · multi-platform pack (TikTok + Reels + Shorts + YouTube + Instagram in one pass) |
-| **Roadmap** | Content-aware object removal (AI mask + inpaint) · reading on-screen text content (OCR recognition — region detection ships today) |
+### 🔍 Read & inspect
+- **Scene state** — timeline / layer / scene structure, schema introspection
+- **Search** — asset gallery (type, duration, name); transcript (keyword, semantic, timestamp)
+- **Vision** — CV frame analysis (object, face, scene); on-screen text-region detection (locates chyrons / lower-thirds / burned-in captions so reframing avoids covering them)
+- **Intelligence** — narrative peaks, speaker diarization, sentiment, pacing
+- **Jobs** — async job status polling
+
+### ✂️ Structural editing
+- **Layers** — insert / update / replace / delete (video, audio, text, image, shape, group, adjustment)
+- **Timing** — trim, split, retime (slow-mo 0.5×, fast-forward 2×, freeze-frame, ramp curves), reverse, stabilize
+- **Arrange** — reposition, sequence, snap to transcript word boundaries
+- **Assemble** — multi-cam sync + automatic angle switching, slideshow generation, chapter markers, SRT import
+- **Safety** — gap healing, audio normalize, duration reconcile (pre-export pass), multi-step undo / redo
+
+### 🎬 Visual editing
+- **Color grade** — brightness, contrast, saturation, hue, lift/gamma/gain, RGB curves
+- **VFX shaders** — smoke, dust, fire, explosion, lightning, snow, glitch, scanlines, grain, glassmorphism, bokeh, lava, corrosion, portal
+- **Composite** — chroma key, AI background removal (alpha matte), AI background blur (subject-aware matte), masking (luma / alpha / depth)
+- **Shape & transform** — clip shapes (circle, dome, star, hexagon, polygon), crop, 3D rotation/perspective, glow, shadow, gradient fills
+- **Reframe & layout** — caption-safe vertical reframe (9:16) + montage, split screen (top/bottom, L/R, PiP, grid)
+- **Track** — motion / face tracking with zoom-follow, branding overlays
+
+### 📊 Motion graphics & data viz
+*~30 production-grade animated graphics:*
+- **Data** — transcript-driven charts (bar, line, pie), stat callouts, animated counters
+- **Lower-thirds & cards** — lower-thirds, title / chapter cards
+- **Diagrams** — flowcharts, timelines, geo callouts
+- **CTAs** — animated subscribe / call-to-action buttons
+
+### 💬 Captions & text
+- **Generate** — auto-captions from the transcript
+- **Style** — built-in templates, or an AI director that picks/generates one at runtime
+- **Animate** — per-word animations (typewriter, slide, fade, scale, rotate, bounce, flip, swing, elastic, blur, glitch, wave — each with a matching exit)
+- **Shape** — curved text paths (circle, wave, custom SVG), Lottie playback control
+
+### 🎵 Audio
+- **Clean up** — remove silences, breaths, filler words; word-level mute/cut
+- **Mix** — auto-duck (sidechain music vs voice), normalize, denoise, crossfade, EQ presets (bass-boost, vocal-clarity, warm, bright), stem separation
+- **Generate** — SFX, music (mood/genre/BPM), voiceover (TTS or cloned voice)
+- **Sync** — external master audio, beat-synced cuts (`beat_times` or `bpm`)
+- **Visualize** — waveforms (bars, wave, circular)
+
+### 🔒 Privacy & cleanup
+- **Faces** — blur all faces or background-only
+- **Regions** — privacy redaction (blur / cover)
+- **Language** — profanity cleanup (mute / bleep)
+- **Layout** — safe-zone repair
+
+### ✨ Async generation
+- **Video** — AI video / B-roll (duration + aspect)
+- **Images** — AI images (single or batch at timestamps), generative image edit, auto-thumbnail extraction
+- **Audio** — AI music (prompt + duration + mood + genre + BPM), AI voiceover (TTS or cloned voice library)
+
+### 🚀 High-level presets
+- **Viral** — vertical + captions + silence removal + tracking + word emphasis
+- **Cinematic director** — dynamic zooms + cinematic grade + mood camera moves
+- **Emphasis system** — keyword detection + coordinated scaling / glow / pulse
+- **Pacing optimizer** — filler + silence + low-energy removal for retention
+
+### 📦 Export
+- **MP4** — single file (resolution / codec / quality tier)
+- **Viral-clip batch** — auto-segmented short-form, packaged as a ZIP
+- **Multi-platform pack** — TikTok + Reels + Shorts + YouTube + Instagram in one pass
+
+### 🗺️ Roadmap
+- Content-aware object removal (AI mask + inpaint)
+- Reading on-screen text content (OCR recognition — region detection ships today)
 
 ---
 
