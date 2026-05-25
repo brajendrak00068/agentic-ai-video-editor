@@ -74,7 +74,7 @@ Every client calls the **same backend** — the MCP server, this ClawHub listing
 
 ### Tools the AI sees
 
-**One edit tool. The rest are typed state-management and polling** — so integrators can build full editing experiences through one API key instead of mixing JWT and MCP.
+**One editing entry point. Everything else is typed state-management and polling** — so integrators can build full editing experiences through one API key instead of mixing JWT and MCP.
 
 | Group | Tools |
 |---|---|
@@ -118,8 +118,6 @@ Say it in plain language; the agent plans and finishes the edit.
 | "Pull the key stats from this and animate them as charts" | Transcript-driven charts + stat-callout motion graphics |
 | "Sync these 3 camera angles and cut between them on the active speaker" | Multi-cam sync + automatic angle switching |
 | "Blur the license plates and bleep the swearing" | Privacy redaction + profanity cleanup |
-
-> **Beta caveat:** outputs sometimes need a second pass. Preview before publishing; for anything you can't undo, approve the plan first via the [plan-approval flow](#plan-approval).
 
 ---
 
@@ -201,13 +199,7 @@ The full toolset behind the prompt. Everything below is reachable from natural l
 
 `autonomous_edit` accepts anything from a five-word command to a five-hundred-word creative brief.
 
-**1. Direct commands** — single edit, single result:
-
-```text
-"Generate captions and remove silences"
-"Reframe to 9:16 for TikTok"
-"Color grade like a Netflix doc"
-```
+**1. Direct commands** — a single edit, single result. The [What it does](#what-it-does) examples above are all direct commands.
 
 **2. Open-ended goals** — hand the agent a *goal* instead of a command; it inspects the asset, then proposes a plan:
 
@@ -217,7 +209,7 @@ The full toolset behind the prompt. Everything below is reachable from natural l
 "Review this footage and propose edits to tighten the pacing"
 ```
 
-Pair these with `requirePlanApproval: true` to keep the agent in propose-only mode — it stops after planning, returns the full plan, and waits for your approval before executing anything.
+Pair these with `requirePlanApproval: true` for propose-only mode — the agent stops after planning and waits for your approval (see [Plan approval](#plan-approval)).
 
 **3. Full creative briefs** — multi-step orchestrations executed end-to-end. The agent decomposes the brief into a DAG of canonical actions, plans the order, executes through safety gates, verifies each step, and exports every requested format. Use SSE to watch each step land in real time.
 
@@ -249,12 +241,12 @@ All paths are under `/api/v1/misc/openclaw`.
 | `GET  /v1/jobs/{jobId}` · `GET /v1/task-status/{taskId}` | Poll async render / generation jobs |
 | `GET  /v1/projects/{id}/active-task` | The project's in-flight task, if any |
 | `GET  /v1/tools` · `GET /v1/health` | List tool names · health check |
-| `… /v1/brands` · `… /v1/projects` · `… /v1/assets/*` | Brand-kit / project / asset CRUD (list · get · create · update · delete) |
-| `… /v1/caption-templates` · `…/apply` · `…/save-current` | Caption-template CRUD + apply |
+| `/v1/brands` · `/v1/projects` · `/v1/assets/*` | Brand-kit / project / asset CRUD — list · get · create · update · delete |
+| `/v1/caption-templates` (+ `/apply`, `/save-current`) | Caption-template CRUD + apply |
 
 Each management group above is also exposed as a typed MCP tool (see [Tools the AI sees](#tools-the-ai-sees)).
 
-> Do **not** point `LEVEA_API_URL` at `studio.livecore.ai` or the in-product editor route `/api/v1/misc/editor/`. Studio is the user-facing app; OpenClaw requests go to the API-key route on `api.livecore.ai`.
+> `LEVEA_API_URL` is the bare host `https://api.livecore.ai` — not a full path, not `studio.livecore.ai`, and not the in-product `/api/v1/misc/editor/` route.
 
 ### Request
 
@@ -347,7 +339,7 @@ while true; do
   STATUS=$(curl -sS "$LEVEA_API_URL/api/v1/misc/openclaw/v1/jobs/$JOB_ID" \
     -H "Authorization: Bearer $LEVEA_API_KEY" | jq -r '.status')
   echo "Status: $STATUS"
-  [ "$STATUS" = "completed" ] || [ "$STATUS" = "failed" ] && break
+  case "$STATUS" in completed|succeeded|failed|error|cancelled) break;; esac
   sleep 5
 done
 
@@ -385,7 +377,7 @@ Pass `requirePlanApproval: true` to make the agent stop after planning. It retur
 | | Legacy (Premiere, DaVinci, CapCut, Descript) | OpenClaw AI Video Editor |
 |---|---|---|
 | **Interface** | Drag, drop, keyframe by hand | One sentence; the agent does the rest |
-| **Auto-analysis on upload** | Manual scene detection + subtitles | Faces, speakers, shots, on-screen text, mattes detected automatically |
+| **Auto-analysis on upload** | Manual scene detection + subtitles | Faces, speakers, shots, on-screen text regions, mattes detected automatically |
 | **"Make this viral"** | You build the workflow | Single preset — vertical + captions + silences + tracking |
 | **Cross-asset search** | Filename search | "Find every clip where Alex appears" across the whole library |
 | **Background replace** | Key out, find background, composite | One call |
