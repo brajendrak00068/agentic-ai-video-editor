@@ -81,7 +81,7 @@ Behind a single `autonomous_edit` call the agent can compose any of:
 - Poll async job status; introspect property schemas
 
 **Structural editing**
-- Insert / update / replace / delete layers (video, audio, text, image, shape, group, adjustment)
+- Insert / update / replace / delete layers (video, audio, image, text, shape, solid, adjustment, group, light, vfx, visualizer, lottie)
 - Trim, split, retime layers (slow-mo 0.5×, fast-forward 2×, freeze-frame)
 - Reposition on the timeline, sequence layers, snap to transcript
 - Heal timeline gaps, normalize audio, reconcile durations (pre-export safety pass)

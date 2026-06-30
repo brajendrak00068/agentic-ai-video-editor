@@ -104,16 +104,16 @@ Say it in plain language; the agent plans and finishes the edit.
 | "Export for TikTok, Reels, Shorts, YouTube, and Instagram" | One pass, all aspect ratios in one bundle |
 | "Replace the green screen with a beach, keep the speaker centered" | Chroma key + background composite + motion tracking in one call |
 | "Remove the background — no green screen" | AI background removal via alpha matte (any footage) |
-| "Blur the background, keep me in focus" | Subject-aware AI background blur |
+| "Swap my background for a city skyline — no green screen" | AI matte removes the subject cleanly, then composites the new background behind |
 | "Remove all silences and filler words, add background music" | Cleans the audio track, adds ducked music under speech |
 | "Auto-zoom on whoever's talking" | Active-speaker detection + dynamic zoom-follow framing |
 | "Caption this and highlight every time they say 'launch'" | Auto-captions + keyword emphasis (scaling / glow / pulse) |
 | "Find every clip where Alex appears" | Cross-asset face identity search |
 | "Add narration in a cloned voice over the intro" | Voice cloning + TTS overlay + auto-ducking |
-| "Cut to the beat of this track" | Provide BPM or beat times — cuts align automatically |
+| "Caption this Hormozi-style with karaoke word highlighting" | Word-synced karaoke captions — active word fills + underlines in time with speech |
 | "Generate B-roll over the product mention" | AI B-roll generation + placement at the right timestamp |
 | "Color grade this like a Netflix doc" | Color grading with cinematic preset |
-| "Slow-mo the climax, freeze on the reveal" | Retime with ramp curves + freeze-frame |
+| "Slow-mo the climax, freeze on the reveal" | Speed change (slow-mo / fast-forward) + freeze-frame |
 | "Reframe to vertical but don't crop the lower-third captions" | Caption-safe 9:16 reframe (detects on-screen text regions and reframes around them) |
 | "Pull the key stats from this and animate them as charts" | Transcript-driven charts + stat-callout motion graphics |
 | "Sync these 3 camera angles and cut between them on the active speaker" | Multi-cam sync + automatic angle switching |
@@ -133,22 +133,24 @@ The full toolset behind the prompt. Everything below is reachable from natural l
 - **Jobs** — async job status polling
 
 ### ✂️ Structural editing
-- **Layers** — insert / update / replace / delete (video, audio, text, image, shape, group, adjustment)
-- **Timing** — trim, split, retime (slow-mo 0.5×, fast-forward 2×, freeze-frame, ramp curves), reverse, stabilize
+- **Layers** — insert / update / replace / delete (video, audio, image, text, shape, solid, adjustment, group, light, vfx, visualizer, lottie)
+- **Timing** — trim, split, retime (slow-mo 0.5×, fast-forward 2×, freeze-frame), reverse, stabilize
 - **Arrange** — reposition, sequence, snap to transcript word boundaries
-- **Assemble** — multi-cam sync + automatic angle switching, slideshow generation, chapter markers, SRT import
+- **Assemble** — multi-cam sync + automatic angle switching, montage assembly (shot discovery + sequencing from source footage), slideshow generation, chapter markers, SRT import
 - **Safety** — gap healing, audio normalize, duration reconcile (pre-export pass), multi-step undo / redo
 
 ### 🎬 Visual editing
-- **Color grade** — brightness, contrast, saturation, hue, lift/gamma/gain, RGB curves
+- **Color grade** — brightness, contrast, saturation, hue, lift/gamma/gain, RGB curves, LUT / film-look presets, vignette, chromatic aberration
 - **VFX shaders** — smoke, dust, fire, explosion, lightning, snow, glitch, scanlines, grain, glassmorphism, bokeh, lava, corrosion, portal
-- **Composite** — chroma key, AI background removal (alpha matte), AI background blur (subject-aware matte), masking (luma / alpha / depth)
-- **Shape & transform** — clip shapes (circle, dome, star, hexagon, polygon), crop, 3D rotation/perspective, glow, shadow, gradient fills
-- **Reframe & layout** — caption-safe vertical reframe (9:16) + montage, split screen (top/bottom, L/R, PiP, grid)
+- **Composite** — chroma key, AI background removal (alpha matte), masking (luma / alpha / depth, with boolean multi-mask)
+- **Blend & opacity** — 17 blend modes (multiply, screen, overlay, color dodge / burn, difference, hue / saturation / color / luminosity, additive) + per-layer & group opacity
+- **Shape & transform** — clip shapes (circle, dome, star, hexagon, polygon), crop, 3D rotation / perspective, glow, shadow, gradient fills
+- **Lighting** — up to 8 scene lights illuminating 3D-transformed layers
+- **Reframe & layout** — caption-safe vertical reframe (9:16) + vertical montage, split screen (top/bottom, L/R, PiP, grid)
 - **Track** — motion / face tracking with zoom-follow, branding overlays
 
 ### 📊 Motion graphics & data viz
-*~30 production-grade animated graphics:*
+*30+ production-grade animated graphics:*
 - **Data** — transcript-driven charts (bar, line, pie), stat callouts, animated counters
 - **Lower-thirds & cards** — lower-thirds, title / chapter cards
 - **Diagrams** — flowcharts, timelines, geo callouts
@@ -158,13 +160,14 @@ The full toolset behind the prompt. Everything below is reachable from natural l
 - **Generate** — auto-captions from the transcript
 - **Style** — built-in templates, or an AI director that picks/generates one at runtime
 - **Animate** — per-word animations (typewriter, slide, fade, scale, rotate, bounce, flip, swing, elastic, blur, glitch, wave — each with a matching exit)
+- **Typography** — crisp scalable glyphs (MSDF), stroke / outline, drop shadow, gradient fill, background pill / box, per-word karaoke fill + underline
 - **Shape** — curved text paths (circle, wave, custom SVG), Lottie playback control
 
 ### 🎵 Audio
 - **Clean up** — remove silences, breaths, filler words; word-level mute/cut
-- **Mix** — auto-duck (sidechain music vs voice), normalize, denoise, crossfade, EQ presets (bass-boost, vocal-clarity, warm, bright), stem separation
+- **Mix** — auto-duck (sidechain music vs voice), loudness (LUFS) normalize + true-peak limiting, denoise, crossfade, EQ presets (bass-boost, vocal-clarity, warm, bright), stem separation
 - **Generate** — SFX, music (mood/genre/BPM), voiceover (TTS or cloned voice)
-- **Sync** — external master audio, beat-synced cuts (`beat_times` or `bpm`)
+- **Sync** — external master audio alignment (timecode / explicit offset)
 - **Visualize** — waveforms (bars, wave, circular)
 
 ### 🔒 Privacy & cleanup
@@ -381,7 +384,7 @@ Pass `requirePlanApproval: true` to make the agent stop after planning. It retur
 | **"Make this viral"** | You build the workflow | Single preset — vertical + captions + silences + tracking |
 | **Cross-asset search** | Filename search | "Find every clip where Alex appears" across the whole library |
 | **Background replace** | Key out, find background, composite | One call |
-| **Beat-synced cuts** | Mark beats by hand | Provide `beat_times` or `bpm`; cuts align automatically |
+| **Broadcast-grade audio** | Manual loudness metering + EQ | Auto LUFS loudness-normalized + true-peak limited, music auto-ducked under speech |
 | **Editorial reasoning** | You decide the climax | Agent surfaces narrative peaks and reaction moments |
 | **Verification** | You eyeball it | Verifier runs after execution; auto-repairs on failure |
 | **Multi-platform export** | One render per ratio | TikTok + Reels + Shorts + YouTube + Instagram in one pass |
