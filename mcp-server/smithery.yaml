@@ -1,0 +1,25 @@
+startCommand:
+  type: stdio
+
+configSchema:
+  type: object
+  required:
+    - LEVEA_API_KEY
+  properties:
+    LEVEA_API_URL:
+      type: string
+      default: "https://api.livecore.ai"
+      description: "The API endpoint for Levea Video Editor."
+    LEVEA_API_KEY:
+      type: string
+      description: "Your Levea API key generated from https://studio.livecore.ai/"
+
+commandFunction: |-
+  (config) => ({
+    command: 'node',
+    args: ['dist/index.js'],
+    env: {
+      LEVEA_API_URL: config.LEVEA_API_URL || 'https://api.livecore.ai',
+      LEVEA_API_KEY: config.LEVEA_API_KEY
+    }
+  })

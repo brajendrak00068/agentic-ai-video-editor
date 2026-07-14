@@ -1,0 +1,95 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Levea AI Video Editor API",
+    "version": "1.0.0",
+    "description": "API to interact with Levea's autonomous AI video editor. Allows submitting video editing briefs, generating viral clips, adding active word-by-word captions, applying motion graphics, and exporting final MP4 videos."
+  },
+  "servers": [
+    {
+      "url": "https://api.livecore.ai",
+      "description": "Production Server"
+    }
+  ],
+  "paths": {
+    "/api/v1/misc/openclaw/v1/execute": {
+      "post": {
+        "operationId": "executeVideoEdit",
+        "summary": "Execute autonomous video edit",
+        "description": "Takes a natural-language description (prompt) of the desired edit, planning, executing, and returning the result.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "params"
+                ],
+                "properties": {
+                  "tool": {
+                    "type": "string",
+                    "default": "autonomous_edit",
+                    "description": "The tool to run. Keep as 'autonomous_edit' for natural-language prompts."
+                  },
+                  "params": {
+                    "type": "object",
+                    "required": [
+                      "prompt"
+                    ],
+                    "properties": {
+                      "prompt": {
+                        "type": "string",
+                        "description": "The natural language instruction of what edits to make. Example: 'Add bold word-by-word captions, track my face, and add a social media lower third card'."
+                      },
+                      "video_url": {
+                        "type": "string",
+                        "description": "Optional starting/source video URL to apply the edits to."
+                      },
+                      "project_id": {
+                        "type": "string",
+                        "description": "Optional Levea project ID for tracking and continuity."
+                      },
+                      "captionTemplatePreset": {
+                        "type": "string",
+                        "description": "Optional caption template preset name (e.g. 'mrbeast', 'hormozi', 'neon-pop', 'typewriter')."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Edit execution result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Human-readable status summary."
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "The detailed execution data, including final exported video URLs."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Check your LEVEA_API_KEY."
+          }
+        }
+      }
+    }
+  }
+}

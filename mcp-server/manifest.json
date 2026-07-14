@@ -1,0 +1,726 @@
+{
+  "manifest_version": "0.3",
+  "name": "levea-mcp-server",
+  "version": "0.5.2",
+  "description": "MCP server for the Levea autonomous AI video editor — natural-language video editing (viral clips, captions, vertical reframe, chroma key, audio cleanup, motion tracking, B-roll, voiceover, music, MP4 export) for Claude Desktop, Claude Code, Cursor, Cline, OpenClaw, and Hermes.",
+  "author": {
+    "name": "brajendrak00068"
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/dist/index.js"
+      ],
+      "env": {
+        "LEVEA_API_URL": "${user_config.levea_api_url}",
+        "LEVEA_API_KEY": "${user_config.levea_api_key}"
+      }
+    }
+  },
+  "user_config": {
+    "levea_api_url": {
+      "type": "string",
+      "title": "Levea API URL",
+      "description": "The API endpoint for Levea Video Editor",
+      "default": "https://api.livecore.ai"
+    },
+    "levea_api_key": {
+      "type": "string",
+      "title": "Levea API Key",
+      "description": "Your Levea API key generated from https://studio.livecore.ai/",
+      "sensitive": true,
+      "required": true
+    }
+  },
+  "_meta": {
+    "tools": {
+      "autonomous_edit": {
+        "description": "PRIMARY EDIT TOOL. Run a natural-language video edit end-to-end. The backend agent plans, executes, verifies, and exports. Accepts anything from a one-liner (\"generate 3 viral clips with captions and export\") to a multi-paragraph creative brief. Returns the final mp4 URL synchronously when an export is queued. For long renders you may prefer queue_edit + check_job_status.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "prompt": {
+              "type": "string",
+              "description": "Natural-language description of the desired edit or creative brief. The backend planner decomposes it into canonical actions (viral clips, captions, reframe, export, …). Send the user's intent verbatim — do not pre-decompose into multiple calls."
+            },
+            "project_id": {
+              "type": "string",
+              "description": "Optional project id for tracking / continuity."
+            },
+            "video_url": {
+              "type": "string",
+              "description": "Optional source video URL. Auto-seeded as the starting layer when no scene is provided."
+            },
+            "assets": {
+              "type": "array",
+              "description": "Optional asset descriptors. Each item: { id?, type: \"video\"|\"image\"|\"audio\", url|src, mimeType?, duration? }.",
+              "items": {
+                "type": "object"
+              }
+            },
+            "scene": {
+              "type": "object",
+              "description": "Optional existing scene/timeline state to continue editing (advanced)."
+            },
+            "requirePlanApproval": {
+              "type": "boolean",
+              "description": "If true, the agent stops after planning and returns { status: \"awaiting_approval\", workingMemory, plan } without mutating. Resume by re-calling with the returned workingMemory + an approval prompt (\"yes\", \"approve\", \"do it\")."
+            },
+            "workingMemory": {
+              "type": "object",
+              "description": "Working-memory snapshot returned by a prior call (typically one that returned awaiting_approval). Re-sending resumes that run."
+            },
+            "attachedImages": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Optional base64-encoded reference images the agent should consider while planning."
+            },
+            "flaggedIssues": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Optional list of specific user-flagged problems for this run (e.g. [\"caption #3 misspelled\"])."
+            },
+            "captionTemplatePreset": {
+              "type": "string",
+              "description": "Optional caption template slug to apply when (re)generating captions. One of 41 builtins (hormozi, mrbeast, viral-pop, minimal-pro, karaoke, neon-pop, typewriter, pop-wave, subtitle-bar, creator-box, …) or a user-saved template id from list_caption_templates."
+            },
+            "captionTemplateMode": {
+              "type": "string",
+              "enum": [
+                "add",
+                "recreate",
+                "style",
+                "translate",
+                "clear",
+                "remove_fillers"
+              ],
+              "description": "How to apply captionTemplatePreset."
+            },
+            "core_only": {
+              "type": "boolean",
+              "description": "If true, response carries only rendering-essential scene fields (no debug metadata)."
+            },
+            "brandId": {
+              "type": "string",
+              "description": "Optional brand-profile id to apply for this call (palette, fonts, logo, voice, gradeBias). Look up ids via list_brand_kits. Overrides project default brand."
+            },
+            "projectBrandId": {
+              "type": "string",
+              "description": "Optional default brand for the project. Persists; per-call brandId overrides."
+            },
+            "editedPlan": {
+              "type": "object",
+              "description": "Optional pre-edited plan object returned by a prior awaiting_approval response."
+            }
+          },
+          "required": [
+            "prompt"
+          ]
+        }
+      },
+      "autonomous_edit_streaming": {
+        "description": "Same as autonomous_edit but consumes the SSE event stream from the backend. Returns the final terminal result; per-step events (status, thinking, tool_call, tool_result, background_job_completed) are emitted as MCP progress notifications when the client supports them. Use for long-running briefs where users expect live progress.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "prompt": {
+              "type": "string",
+              "description": "Natural-language description of the desired edit or creative brief. The backend planner decomposes it into canonical actions (viral clips, captions, reframe, export, …). Send the user's intent verbatim — do not pre-decompose into multiple calls."
+            },
+            "project_id": {
+              "type": "string",
+              "description": "Optional project id for tracking / continuity."
+            },
+            "video_url": {
+              "type": "string",
+              "description": "Optional source video URL. Auto-seeded as the starting layer when no scene is provided."
+            },
+            "assets": {
+              "type": "array",
+              "description": "Optional asset descriptors. Each item: { id?, type: \"video\"|\"image\"|\"audio\", url|src, mimeType?, duration? }.",
+              "items": {
+                "type": "object"
+              }
+            },
+            "scene": {
+              "type": "object",
+              "description": "Optional existing scene/timeline state to continue editing (advanced)."
+            },
+            "requirePlanApproval": {
+              "type": "boolean",
+              "description": "If true, the agent stops after planning and returns { status: \"awaiting_approval\", workingMemory, plan } without mutating. Resume by re-calling with the returned workingMemory + an approval prompt (\"yes\", \"approve\", \"do it\")."
+            },
+            "workingMemory": {
+              "type": "object",
+              "description": "Working-memory snapshot returned by a prior call (typically one that returned awaiting_approval). Re-sending resumes that run."
+            },
+            "attachedImages": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Optional base64-encoded reference images the agent should consider while planning."
+            },
+            "flaggedIssues": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Optional list of specific user-flagged problems for this run (e.g. [\"caption #3 misspelled\"])."
+            },
+            "captionTemplatePreset": {
+              "type": "string",
+              "description": "Optional caption template slug to apply when (re)generating captions. One of 41 builtins (hormozi, mrbeast, viral-pop, minimal-pro, karaoke, neon-pop, typewriter, pop-wave, subtitle-bar, creator-box, …) or a user-saved template id from list_caption_templates."
+            },
+            "captionTemplateMode": {
+              "type": "string",
+              "enum": [
+                "add",
+                "recreate",
+                "style",
+                "translate",
+                "clear",
+                "remove_fillers"
+              ],
+              "description": "How to apply captionTemplatePreset."
+            },
+            "core_only": {
+              "type": "boolean",
+              "description": "If true, response carries only rendering-essential scene fields (no debug metadata)."
+            },
+            "brandId": {
+              "type": "string",
+              "description": "Optional brand-profile id to apply for this call (palette, fonts, logo, voice, gradeBias). Look up ids via list_brand_kits. Overrides project default brand."
+            },
+            "projectBrandId": {
+              "type": "string",
+              "description": "Optional default brand for the project. Persists; per-call brandId overrides."
+            },
+            "editedPlan": {
+              "type": "object",
+              "description": "Optional pre-edited plan object returned by a prior awaiting_approval response."
+            }
+          },
+          "required": [
+            "prompt"
+          ]
+        }
+      },
+      "queue_edit": {
+        "description": "Fire-and-forget async path. Returns immediately with a `taskId`. Use when the edit may exceed the MCP request timeout (long viral-clip generation, multi-format export). Poll with check_task_status or get_active_task.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "prompt": {
+              "type": "string",
+              "description": "Natural-language description of the desired edit or creative brief. The backend planner decomposes it into canonical actions (viral clips, captions, reframe, export, …). Send the user's intent verbatim — do not pre-decompose into multiple calls."
+            },
+            "project_id": {
+              "type": "string",
+              "description": "Optional project id for tracking / continuity."
+            },
+            "video_url": {
+              "type": "string",
+              "description": "Optional source video URL. Auto-seeded as the starting layer when no scene is provided."
+            },
+            "assets": {
+              "type": "array",
+              "description": "Optional asset descriptors. Each item: { id?, type: \"video\"|\"image\"|\"audio\", url|src, mimeType?, duration? }.",
+              "items": {
+                "type": "object"
+              }
+            },
+            "scene": {
+              "type": "object",
+              "description": "Optional existing scene/timeline state to continue editing (advanced)."
+            },
+            "requirePlanApproval": {
+              "type": "boolean",
+              "description": "If true, the agent stops after planning and returns { status: \"awaiting_approval\", workingMemory, plan } without mutating. Resume by re-calling with the returned workingMemory + an approval prompt (\"yes\", \"approve\", \"do it\")."
+            },
+            "workingMemory": {
+              "type": "object",
+              "description": "Working-memory snapshot returned by a prior call (typically one that returned awaiting_approval). Re-sending resumes that run."
+            },
+            "attachedImages": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Optional base64-encoded reference images the agent should consider while planning."
+            },
+            "flaggedIssues": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Optional list of specific user-flagged problems for this run (e.g. [\"caption #3 misspelled\"])."
+            },
+            "captionTemplatePreset": {
+              "type": "string",
+              "description": "Optional caption template slug to apply when (re)generating captions. One of 41 builtins (hormozi, mrbeast, viral-pop, minimal-pro, karaoke, neon-pop, typewriter, pop-wave, subtitle-bar, creator-box, …) or a user-saved template id from list_caption_templates."
+            },
+            "captionTemplateMode": {
+              "type": "string",
+              "enum": [
+                "add",
+                "recreate",
+                "style",
+                "translate",
+                "clear",
+                "remove_fillers"
+              ],
+              "description": "How to apply captionTemplatePreset."
+            },
+            "core_only": {
+              "type": "boolean",
+              "description": "If true, response carries only rendering-essential scene fields (no debug metadata)."
+            },
+            "brandId": {
+              "type": "string",
+              "description": "Optional brand-profile id to apply for this call (palette, fonts, logo, voice, gradeBias). Look up ids via list_brand_kits. Overrides project default brand."
+            },
+            "projectBrandId": {
+              "type": "string",
+              "description": "Optional default brand for the project. Persists; per-call brandId overrides."
+            },
+            "editedPlan": {
+              "type": "object",
+              "description": "Optional pre-edited plan object returned by a prior awaiting_approval response."
+            }
+          },
+          "required": [
+            "prompt"
+          ]
+        }
+      },
+      "check_job_status": {
+        "description": "Poll an export / async job by jobId (numeric). Supports wait:true to block until terminal.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "job_id": {
+              "type": "string",
+              "description": "Job id to poll (numeric)."
+            },
+            "wait": {
+              "type": "boolean",
+              "description": "Block until terminal state."
+            }
+          },
+          "required": [
+            "job_id"
+          ]
+        }
+      },
+      "check_task_status": {
+        "description": "Poll a queued edit task by taskId (returned by queue_edit). Separate from job_id (exports).",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "task_id": {
+              "type": "string",
+              "description": "Task id from queue_edit."
+            }
+          },
+          "required": [
+            "task_id"
+          ]
+        }
+      },
+      "get_active_task": {
+        "description": "For a given project, return the currently-running edit task (if any). Useful for reconnecting MCP clients.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "project_id": {
+              "type": "string",
+              "description": "Project id."
+            }
+          },
+          "required": [
+            "project_id"
+          ]
+        }
+      },
+      "list_caption_templates": {
+        "description": "List the user's caption templates (builtin + saved). Returns slugs, display names, and style summaries.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {},
+          "required": []
+        }
+      },
+      "apply_caption_template": {
+        "description": "Apply a caption template to a scene synchronously (without going through autonomous_edit).",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "template_id": {
+              "type": "string",
+              "description": "Template slug / id from list_caption_templates."
+            },
+            "project_id": {
+              "type": "string",
+              "description": "Project / scene id to apply to."
+            },
+            "scene": {
+              "type": "object",
+              "description": "Inline scene (alternative to project_id)."
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "add",
+                "recreate",
+                "style",
+                "translate",
+                "clear",
+                "remove_fillers"
+              ]
+            }
+          },
+          "required": [
+            "template_id"
+          ]
+        }
+      },
+      "save_caption_template": {
+        "description": "Save a new caption template definition the user can re-apply later.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Display name."
+            },
+            "style": {
+              "type": "object",
+              "description": "Style payload (font, color, position, animation, etc.)."
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Optional tags."
+            }
+          },
+          "required": [
+            "name",
+            "style"
+          ]
+        }
+      },
+      "save_current_caption_template": {
+        "description": "Snapshot the caption styling currently applied to a project / scene as a reusable template.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "project_id": {
+              "type": "string",
+              "description": "Project to snapshot from."
+            },
+            "name": {
+              "type": "string",
+              "description": "Template display name."
+            },
+            "scene": {
+              "type": "object",
+              "description": "Inline scene (alternative to project_id)."
+            }
+          },
+          "required": [
+            "name"
+          ]
+        }
+      },
+      "delete_caption_template": {
+        "description": "Delete a user-saved caption template by id.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "template_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "template_id"
+          ]
+        }
+      },
+      "list_brand_kits": {
+        "description": "List the user's brand profiles (palette, fonts, logo, voice, gradeBias). Returns ids you pass to autonomous_edit's brandId / projectBrandId.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {},
+          "required": []
+        }
+      },
+      "get_brand_kit": {
+        "description": "Fetch one brand profile by id.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "brand_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "brand_id"
+          ]
+        }
+      },
+      "create_brand_kit": {
+        "description": "Create a brand profile. Fields: name, palette {primary,secondary,accent,neutral,extras[]}, fonts {primary,secondary}, gradeBias (warm/cool/neutral/vivid/muted), forbiddenColors[], logoAssetUrl, voiceTone, enforcement (soft|hard).",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "palette": {
+              "type": "object"
+            },
+            "fonts": {
+              "type": "object"
+            },
+            "gradeBias": {
+              "type": "string",
+              "enum": [
+                "warm",
+                "cool",
+                "neutral",
+                "vivid",
+                "muted"
+              ]
+            },
+            "forbiddenColors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "logoAssetUrl": {
+              "type": "string"
+            },
+            "voiceTone": {
+              "type": "string"
+            },
+            "enforcement": {
+              "type": "string",
+              "enum": [
+                "soft",
+                "hard"
+              ]
+            }
+          },
+          "required": [
+            "name"
+          ]
+        }
+      },
+      "update_brand_kit": {
+        "description": "Update an existing brand profile by id. Body has the same shape as create_brand_kit.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "brand_id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "palette": {
+              "type": "object"
+            },
+            "fonts": {
+              "type": "object"
+            },
+            "gradeBias": {
+              "type": "string"
+            },
+            "forbiddenColors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "logoAssetUrl": {
+              "type": "string"
+            },
+            "voiceTone": {
+              "type": "string"
+            },
+            "enforcement": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "brand_id"
+          ]
+        }
+      },
+      "delete_brand_kit": {
+        "description": "Delete a brand profile.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "brand_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "brand_id"
+          ]
+        }
+      },
+      "list_projects": {
+        "description": "List the user's projects.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {},
+          "required": []
+        }
+      },
+      "get_project": {
+        "description": "Fetch one project by id.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "project_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "project_id"
+          ]
+        }
+      },
+      "create_project": {
+        "description": "Create a new project. Optional initial brandId.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "brandId": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name"
+          ]
+        }
+      },
+      "delete_project": {
+        "description": "Delete a project.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "project_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "project_id"
+          ]
+        }
+      },
+      "asset_upload_url": {
+        "description": "Get a signed upload URL for a local file (so users do not have to host video / image / audio elsewhere before passing video_url to autonomous_edit). Body: { fileName, fileType?, contentType?, projectId? }. Returns { uploadUrl, fileUrl }; PUT the file bytes to uploadUrl, then pass fileUrl to autonomous_edit as video_url / in assets[].",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "fileName": {
+              "type": "string"
+            },
+            "fileType": {
+              "type": "string",
+              "description": "video | image | audio (heuristic from extension if omitted)."
+            },
+            "contentType": {
+              "type": "string",
+              "description": "MIME type, e.g. video/mp4."
+            },
+            "projectId": {
+              "type": "string",
+              "description": "Optional project to associate the asset with."
+            }
+          },
+          "required": [
+            "fileName"
+          ]
+        }
+      },
+      "list_assets": {
+        "description": "List the user's uploaded assets. Optional projectId filter.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "projectId": {
+              "type": "string"
+            },
+            "fileType": {
+              "type": "string",
+              "description": "Optional filter: video|image|audio."
+            }
+          },
+          "required": []
+        }
+      },
+      "delete_asset": {
+        "description": "Delete an asset by file name (the path returned by asset_upload_url).",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "fileName": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "fileName"
+          ]
+        }
+      },
+      "transcribe_asset": {
+        "description": "Force transcription of an existing asset. Returns transcript words + timing.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "fileName": {
+              "type": "string",
+              "description": "Asset path."
+            },
+            "language": {
+              "type": "string",
+              "description": "Optional ASR language hint."
+            }
+          },
+          "required": [
+            "fileName"
+          ]
+        }
+      },
+      "editor_health": {
+        "description": "Connectivity diagnostic against LEVEA_API_URL. Unauthenticated.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {},
+          "required": []
+        }
+      }
+    }
+  }
+}

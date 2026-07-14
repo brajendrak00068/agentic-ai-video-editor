@@ -146,7 +146,7 @@ const AUTONOMOUS_EDIT_SCHEMA = {
   required: ['prompt'],
 } as const;
 
-const TOOLS: Tool[] = [
+export const TOOLS: Tool[] = [
   // ── Editing — single tool ────────────────────────────────────────────────
   {
     name: 'autonomous_edit',
