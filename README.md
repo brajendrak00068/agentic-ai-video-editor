@@ -17,27 +17,30 @@ Unlike a one-shot video generator, Levea maintains an editable project containin
 Levea separates probabilistic creative reasoning from deterministic project execution:
 
 ```text
-Creative intent + source media
-              │
-              ▼
-Multimodal planner and editing policies
-              │
-              ▼
-Typed intent plan / Workflow DAG
-              │
-              ▼
-Deterministic production power packs
-  ├── timeline and structural editing
-  ├── captions, layout, and motion graphics
-  ├── audio, compositing, and media operators
-  ├── generative-media adapters
-  └── validators and bounded repair
-              │
-              ▼
-Scene v4 media IR
-              │
-              ▼
-Versioned project commit ──► optional Vulkan / WebGPU render and export
+               Creative Intent + Source Media
+                            │
+                            ▼
+         Probabilistic Multimodal Intelligence
+                    (Frontier Models)
+                            │
+                            ▼
+          Typed Edit Graph / Media IR
+                  (Scene Graph DAG)
+                            │
+                            ▼
+         Deterministic Video-Production Harness
+             ├── Timeline and Scene Graph
+             ├── Media Operators
+             ├── Caption and Layout Engine
+             ├── Animation and Motion System
+             ├── Generative Media Adapters
+             ├── Renderer (Vulkan / WebGPU)
+             ├── Validators
+             ├── Project Versioning
+             └── Export Pipeline
+                            │
+                            ▼
+            Verification → Bounded Repair → Export
 ```
 
 ### 1. Multimodal planning
