@@ -148,13 +148,6 @@ Capability availability varies by deployment, enabled models, media type, and ac
 - Cross-asset identity search and other model-backed perception features.
 - Perceptual review coverage and latency for long-running generation or rendering tasks.
 
-### Limited or roadmap
-
-- **Arbitrary content-aware object removal:** the current `OBJECT_HIDE` path can cover, blur, crop, or replace a region; it is not general tracked object removal with guaranteed background reconstruction.
-- **Open-vocabulary object tracking:** automatic free-text tracking requires an open-vocabulary detector such as Grounding DINO. Faces, text regions, explicit regions, and supplied tracks have dedicated paths.
-- **Non-Latin text across every renderer:** native shaping supports broader Unicode scripts, but some caption and motion-graphics atlas paths remain limited. Validate CJK, Arabic, Indic, and other complex-script outputs before delivery.
-- **True speech/music stem separation and specialist mastering formats:** availability depends on separately deployed services and should not be assumed from the core MCP package.
-
 ---
 
 ## MCP tool surface
